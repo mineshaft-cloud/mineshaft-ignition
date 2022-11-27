@@ -37,5 +37,4 @@ storage:
       filesystem: root
       mode: 777
       contents:
-        remote:
-          url: https://get.k3s.io
+        source: https://get.k3s.io
