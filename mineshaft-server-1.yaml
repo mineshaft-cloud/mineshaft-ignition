@@ -1,0 +1,40 @@
+systemd:
+  units:
+    - name: k3s-install.service
+      enabled: true 
+      contents: |
+        [Unit]
+        Description=Run K3s script
+        Wants = network-online.target
+        After = network.target network-online.target        
+        ConditionPathExists=/opt/k3s-install.sh
+        ConditionPathExists=!/opt/bin/k3s
+        [Service]
+        Type=forking
+        TimeoutStartSec=180
+        RemainAfterExit=yes
+        KillMode=process
+        Environment="K3S_TOKEN=SECRET_TOKEN"
+        Environment="INSTALL_K3S_EXEC=--cluster-init"
+        ExecStart=/usr/bin/sh -c "/opt/k3s-install.sh"
+        [Install]
+        WantedBy=multi-user.target        
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCslNS8yi/J4Xotb2Ob1Vi1NHvKc76l2s9/5UAytNl+uDaCc9vfCXQmhPFFeCO9OOvog8gQ7lifNP8/jTquDdC6sl/59Wi92fLXMH0r3zrsDh3y21HX0YLLn54ZSCiehZvmzKmzPQwBqolMjoL/JhMCQiD5ycY98S5Osx2Vck9Z69vUTf6wmV1LHh+pQZ78h9cDNmntY6Nxw/444/dxaaqsQCc36YPaMKN1d5fsrfBMIoQrrVT4pHe8ncpvwDFp8C4vE+kWezqhIwg6r/SEACQjBg2lDRDJqVTo1eQDxnLNfas3UCmcVNGVfvgMYOf9EkEGIZOCBr9wEbGPdhrqYP/gKTq2VVmD5zzl7oBYol2biFU4VgWM2vqC7Sx7to7L0A3hYbdUukWzT69WPb7S6LGSiT9ngGU+qjRo5VxultdzgJLU+3PLEQaSLESPGuC+WB/7DT2c+cQ1fSnBd6Y/FFSZcQ3s8k/zIAgcNPQIt4f5XPsrO9TAMdRgUoDR6sGG0h0=
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCf6l6uAJ+IQ3RBrNL7jN+JhD3XkV8Z0lVclDlKRy0eaxwlYjBoIzFvSzfVxdwVVaONi0MbhC6PPxghCIKWbDh6CEZ556ySqNKjND2aCBUCAL3xU7ZjYgOjNY1gtV5Nd26BSZCFoDMqUIS5LaXcJQzH0oaXKFvTGfAJxh/W7mY0fNRE4W4NVVuaaqZnttNh1+bewS4om8hkSbOz7cmCFTtVqj1pvwcAq93BzDFYnLmWUWpo5d5L4a9ZEkpQHUfcQ+gi6A47v0xWoPDhCLM3klqSCfShdmCRpHRP+isOsZlMV1lnTBeC4yAwJgSbY3wwBP2ecwGhhAu6rUsqP4STYhD0gqIq/amV9CBBAc10KBU36T12LJ29+89MD1yEY/4fhHoNEkY7/omtsw5mI+1qKjBBswgis8yUYlLYECBdZTVRLM8BwVN9Mu5nE3822WLh1Tl09CrEQ2uOSXFzONueynuV+aR041k5hUI+7jImLgKQnvIdMEvnvvGkLuW/Hjf/E5E=
+storage:
+  files:
+    - path: /etc/hostname
+      filesystem: root
+      mode: 0644      
+      contents:
+        inline: mineshaft-server-1
+    - path: /opt/k3s-install.sh
+      filesystem: root
+      mode: 777
+      contents:
+        remote:
+          url: https://get.k3s.io
